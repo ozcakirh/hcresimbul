@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f7fb">
+  <title>Resim Bul — Hafıza Oyunu</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Resim Bul ana sayfa"><span class="brand-mark">◈</span> resim<span>bul</span></a>
+      <div class="top-note"><span class="status-dot"></span> Hafıza antrenmanı</div>
+    </header>
+
+    <section class="intro" aria-labelledby="game-title">
+      <div class="eyebrow"><span>✦</span> DİKKATİNİ TOPLA</div>
+      <h1 id="game-title">Resimleri eşleştir<span class="title-period">.</span></h1>
+      <p class="subtitle">Kartların yerini aklında tut, aynı olanları bul.</p>
+    </section>
+
+    <section class="game-panel" aria-label="Hafıza oyunu">
+      <div class="game-toolbar">
+        <div class="stats" aria-live="polite">
+          <div class="stat"><span class="stat-label">EŞLEŞME</span><strong id="matches">0 <small>/ 18</small></strong></div>
+          <span class="stat-divider"></span>
+          <div class="stat"><span class="stat-label">HAMLE</span><strong id="moves">0</strong></div>
+          <span class="stat-divider"></span>
+          <div class="stat"><span class="stat-label">SÜRE</span><strong id="timer">00:00</strong></div>
+        </div>
+        <button class="restart-button" id="restart" type="button" aria-label="Oyunu yeniden başlat"><span aria-hidden="true">↻</span> Yeniden başla</button>
+      </div>
+
+      <div class="board-wrap">
+        <div class="board" id="board" role="grid" aria-label="36 kartlık oyun alanı"></div>
+        <div class="overlay" id="overlay">
+          <div class="overlay-card">
+            <div class="overlay-icon" id="overlay-icon">🧠</div>
+            <h2 id="overlay-title">Hazır mısın?</h2>
+            <p id="overlay-text">18 resim çiftinin yerini bul. Başlamadan önce kartları 3 saniye inceleyebilirsin.</p>
+            <button class="start-button" id="start" type="button">Oyuna başla <span aria-hidden="true">→</span></button>
+          </div>
+        </div>
+      </div>
+      <div class="game-footer"><span class="hint-icon">✦</span><span id="hint">Başlamak için butona dokun.</span><span class="keyboard-hint">İyi eğlenceler!</span></div>
+    </section>
+    <footer class="page-footer">Biraz dikkat, biraz hafıza. <span>♡</span></footer>
+  </main>
+  <script src="game.js"></script>
+</body>
+</html>
