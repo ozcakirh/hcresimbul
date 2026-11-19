@@ -34,6 +34,7 @@
           <h2>Genel sayaç</h2>
           <div class="global-row"><span class="global-label">Başlatılan</span><strong id="g-start">—</strong><small id="g-start-time"></small></div>
           <div class="global-row"><span class="global-label">Tamamlanan</span><strong id="g-end">—</strong><small id="g-end-time"></small></div>
+          <div class="global-row"><span class="global-label">İki kişilik oyun</span><strong id="g-multi">—</strong><small id="g-multi-time"></small></div>
           <div class="global-bar" aria-hidden="true"><span id="g-bar"></span></div>
           <p class="global-rate" id="g-rate">Tamamlanma oranı: —</p>
         </section>
@@ -48,6 +49,7 @@
             <span class="stat-divider"></span>
             <div class="stat"><span class="stat-label">Süre</span><strong id="timer">00:00</strong></div>
           </div>
+          <div class="mp-bar" id="mp-bar" aria-live="polite" hidden></div>
           <button class="restart-button" id="restart" type="button" aria-label="Oyunu yeniden başlat"><span aria-hidden="true">↻</span> Yeniden başla</button>
         </div>
 
@@ -59,6 +61,43 @@
               <h2 id="overlay-title">Hazır mısın?</h2>
               <p id="overlay-text">18 resim çiftinin yerini bul. Başlamadan önce kartları 3 saniye inceleyebilirsin.</p>
               <button class="start-button" id="start" type="button">Oyuna başla <span aria-hidden="true">→</span></button>
+              <button class="ghost-button" id="multi-open" type="button">👥 İki kişilik oyun</button>
+            </div>
+          </div>
+          <div class="overlay is-hidden" id="mp-overlay">
+            <div class="overlay-card">
+              <section data-view="menu">
+                <div class="overlay-icon">👥</div><h2>İki kişilik oyun</h2>
+                <p>Bir oda kur ve 4 haneli kodu arkadaşına ver, ya da aldığın kodla odaya katıl.</p>
+                <div class="mp-actions">
+                  <button class="start-button" id="mp-create" type="button">Çok oyunculu başlat</button>
+                  <button class="ghost-button" id="mp-join-open" type="button">Oyuna katıl</button>
+                  <button class="link-button" id="mp-back" type="button">← Geri</button>
+                </div>
+              </section>
+              <section data-view="join" hidden>
+                <div class="overlay-icon">🔑</div><h2>Odaya katıl</h2>
+                <p>Arkadaşının sana verdiği 4 haneli kodu gir.</p>
+                <input class="mp-input" id="mp-code" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="0000" aria-label="Oda kodu">
+                <div class="mp-actions">
+                  <button class="start-button" id="mp-join" type="button">Katıl <span aria-hidden="true">→</span></button>
+                  <button class="link-button" id="mp-join-back" type="button">← Geri</button>
+                </div>
+              </section>
+              <section data-view="wait" hidden>
+                <div class="overlay-icon">⏳</div><h2>Rakip bekleniyor…</h2>
+                <p>Bu kodu arkadaşına ver, "Oyuna katıl" diyerek girsin.</p>
+                <div class="mp-show-code" id="mp-show-code">----</div>
+                <div class="mp-actions"><button class="link-button" id="mp-cancel" type="button">İptal</button></div>
+              </section>
+              <section data-view="result" hidden>
+                <div class="overlay-icon" id="mp-r-icon">🎉</div><h2 id="mp-r-title"></h2><p id="mp-r-text"></p>
+                <div class="mp-actions">
+                  <button class="start-button" id="mp-rematch" type="button">Rövanş</button>
+                  <button class="link-button" id="mp-exit" type="button">Çık</button>
+                </div>
+              </section>
+              <p class="mp-error" id="mp-error" role="alert" hidden></p>
             </div>
           </div>
         </div>
@@ -68,5 +107,6 @@
     <footer class="page-footer">Biraz dikkat, biraz hafıza. <span>♡</span></footer>
   </main>
   <script src="game.js"></script>
+  <script src="multi.js"></script>
 </body>
 </html>

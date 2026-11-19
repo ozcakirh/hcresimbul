@@ -9,7 +9,7 @@
     overlayTitle = $('#overlay-title'), overlayText = $('#overlay-text'), startButton = $('#start'),
     hint = $('#hint'), matchLabel = $('#matches'), moveLabel = $('#moves'), timerLabel = $('#timer'),
     scoreList = $('#score-list'), lastPlayed = $('#last-played'), lastPlayedSub = $('#last-played-sub'),
-    gStart = $('#g-start'), gEnd = $('#g-end'), gStartTime = $('#g-start-time'), gEndTime = $('#g-end-time'), gBar = $('#g-bar'), gRate = $('#g-rate'),
+    gStart = $('#g-start'), gEnd = $('#g-end'), gStartTime = $('#g-start-time'), gEndTime = $('#g-end-time'), gBar = $('#g-bar'), gMulti = $('#g-multi'), gMultiTime = $('#g-multi-time'), gRate = $('#g-rate'),
     soundButton = $('#sound'), soundIcon = $('#sound-icon'), soundText = $('#sound-text');
   let deck = [], first = null, locked = true, moves = 0, matches = 0, wrongs = 0, seconds = 0,
     clock = null, previewTimeout = null, missTimeout = null;
@@ -43,6 +43,7 @@
     flip()  { tone(620, 0, 0.06, 'square', 0.05); },
     right() { tone(659, 0, 0.14, 'sine', 0.17); tone(880, 0.1, 0.28, 'sine', 0.17); },
     wrong() { tone(220, 0, 0.18, 'sawtooth', 0.09); tone(165, 0.14, 0.28, 'sawtooth', 0.09); },
+    turn()  { tone(784, 0, 0.1, 'triangle', 0.14); tone(988, 0.1, 0.18, 'triangle', 0.14); },
     win()   { [523, 659, 784, 1047, 784, 1047].forEach((f, i) => tone(f, i * 0.12, 0.3, 'triangle', 0.17)); }
   };
   function renderSound() {
@@ -105,6 +106,8 @@
     if (!d) return;
     gStart.textContent = nf.format(d.StartCount); gEnd.textContent = nf.format(d.EndCount);
     gStartTime.textContent = stamp(d.StartUpdatedAt); gEndTime.textContent = stamp(d.EndUpdatedAt);
+    gMulti.textContent = nf.format(d.MultiStartCount || 0);
+    gMultiTime.textContent = `Biten: ${nf.format(d.MultiEndCount || 0)} · ` + stamp(d.MultiStartUpdatedAt);
     const pct = d.StartCount ? Math.min(100, Math.round(d.EndCount / d.StartCount * 100)) : 0;
     gBar.style.width = pct + '%'; gRate.textContent = `Tamamlanma oranı: %${pct}`;
   }
@@ -191,7 +194,19 @@
       }, 850);
     }
   }
+  /* ---------- İki kişilik mod köprüsü (multi.js kullanır) ---------- */
+  let multi = false;
+  function showStart() {
+    deck = []; first = null; locked = true; renderBoard(); updateStats();
+    showOverlay('🧠', 'Hazır mısın?', '18 resim çiftinin yerini bul. Başlamadan önce kartları 3 saniye inceleyebilirsin.', 'Oyuna başla');
+    hint.textContent = 'Başlamak için butona dokun.';
+  }
+  window.ResimBul = {
+    pictures, sounds, board, onLeave: null,
+    enterMulti() { clearTimeout(previewTimeout); clearTimeout(missTimeout); stopClock(); locked = true; multi = true; overlay.classList.add('is-hidden'); },
+    exitMulti() { multi = false; showStart(); }
+  };
   startButton.addEventListener('click', beginGame);
-  $('#restart').addEventListener('click', beginGame);
+  $('#restart').addEventListener('click', () => multi ? window.ResimBul.onLeave && window.ResimBul.onLeave() : beginGame());
   renderSound(); renderScores(); renderBoard(); updateStats();
 })();
