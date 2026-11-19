@@ -10,7 +10,7 @@
     hint = $('#hint'), matchLabel = $('#matches'), moveLabel = $('#moves'), timerLabel = $('#timer'),
     scoreList = $('#score-list'), lastPlayed = $('#last-played'), lastPlayedSub = $('#last-played-sub'),
     soundButton = $('#sound'), soundIcon = $('#sound-icon'), soundText = $('#sound-text');
-  let deck = [], first = null, locked = true, moves = 0, matches = 0, seconds = 0,
+  let deck = [], first = null, locked = true, moves = 0, matches = 0, wrongs = 0, seconds = 0,
     clock = null, previewTimeout = null, missTimeout = null;
 
   /* ---------- Depolama (kapalıysa sessizce atla) ---------- */
@@ -79,7 +79,8 @@
     scores.forEach(s => {
       const li = document.createElement('li');
       li.className = 'score-item' + (s === best ? ' is-best' : '');
-      li.innerHTML = `<span class="score-main">${s.moves} <small>hamle</small></span><span class="score-time">${fmt(s.seconds)}</span><span class="score-when">${ago(s.at)}</span>${s === best ? '<span class="score-badge">★ En iyi</span>' : '<span></span>'}`;
+      const wrong = s.wrong ?? Math.max(0, s.moves - 18), right = s.right ?? 18;
+      li.innerHTML = `<span class="score-main">${s.moves} <small>hamle</small></span><span class="score-time">${fmt(s.seconds)}</span><span class="score-when">${ago(s.at)}</span>${s === best ? '<span class="score-badge">★ En iyi</span>' : '<span></span>'}<span class="score-detail"><span class="is-right">✓ ${right} doğru</span><span class="is-wrong">✗ ${wrong} yanlış</span></span>`;
       scoreList.append(li);
     });
     const last = scores[0];
@@ -87,7 +88,7 @@
     lastPlayedSub.textContent = new Date(last.at).toLocaleString('tr-TR', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
   }
   function saveScore() {
-    scores = [{ moves, seconds, at: Date.now() }, ...scores].slice(0, 6);
+    scores = [{ moves, right: matches, wrong: wrongs, seconds, at: Date.now() }, ...scores].slice(0, 6);
     store.set('resimbul-scores', scores); renderScores();
   }
   $('#clear-scores').addEventListener('click', () => {
@@ -136,7 +137,7 @@
   function beginGame() {
     clearTimeout(previewTimeout); clearTimeout(missTimeout); stopClock();
     deck = shuffledCards().map(card => ({ ...card, open: false, matched: false, wrong: false }));
-    first = null; locked = true; moves = 0; matches = 0; seconds = 0; updateStats();
+    first = null; locked = true; moves = 0; matches = 0; wrongs = 0; seconds = 0; updateStats();
     hint.textContent = 'Resimleri dikkatlice incele; 3 saniye sonra kartlar kapanacak.';
     renderBoard(true); overlay.classList.add('is-hidden');
     sounds.start();
@@ -156,12 +157,12 @@
       if (matches === 18) {
         stopClock(); saveScore(); setTimeout(() => sounds.win(), 250);
         hint.textContent = 'Harika, bütün çiftleri buldun!';
-        showOverlay('🎉', 'Hepsini buldun!', `${moves} hamlede ve ${timerLabel.textContent} sürede tamamladın. Bir tur daha oynamak ister misin?`, 'Tekrar oyna');
+        showOverlay('🎉', 'Hepsini buldun!', `${moves} hamlede (${wrongs} yanlış) ve ${timerLabel.textContent} sürede tamamladın. Bir tur daha oynamak ister misin?`, 'Tekrar oyna');
       } else {
         sounds.right(); hint.textContent = 'Eşleşti! Bir sonraki çifti bul.';
       }
     } else {
-      const a = first; first = null;
+      wrongs++; const a = first; first = null;
       deck[a].wrong = deck[second].wrong = true; renderBoard(); sounds.wrong();
       hint.textContent = 'Eşleşmedi. Yerlerini aklında tut!';
       missTimeout = setTimeout(() => {
