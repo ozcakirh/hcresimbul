@@ -9,6 +9,7 @@
     overlayTitle = $('#overlay-title'), overlayText = $('#overlay-text'), startButton = $('#start'),
     hint = $('#hint'), matchLabel = $('#matches'), moveLabel = $('#moves'), timerLabel = $('#timer'),
     scoreList = $('#score-list'), lastPlayed = $('#last-played'), lastPlayedSub = $('#last-played-sub'),
+    gStart = $('#g-start'), gEnd = $('#g-end'), gStartTime = $('#g-start-time'), gEndTime = $('#g-end-time'), gBar = $('#g-bar'), gRate = $('#g-rate'),
     soundButton = $('#sound'), soundIcon = $('#sound-icon'), soundText = $('#sound-text');
   let deck = [], first = null, locked = true, moves = 0, matches = 0, wrongs = 0, seconds = 0,
     clock = null, previewTimeout = null, missTimeout = null;
@@ -97,6 +98,25 @@
   });
   setInterval(renderScores, 30000);
 
+  /* ---------- Genel sayaç (api.php) ---------- */
+  const nf = new Intl.NumberFormat('tr-TR');
+  const stamp = iso => iso ? 'Son: ' + new Date(iso).toLocaleString('tr-TR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', second: '2-digit' }) : 'Henüz yok';
+  function renderGlobal(d) {
+    if (!d) return;
+    gStart.textContent = nf.format(d.StartCount); gEnd.textContent = nf.format(d.EndCount);
+    gStartTime.textContent = stamp(d.StartUpdatedAt); gEndTime.textContent = stamp(d.EndUpdatedAt);
+    const pct = d.StartCount ? Math.min(100, Math.round(d.EndCount / d.StartCount * 100)) : 0;
+    gBar.style.width = pct + '%'; gRate.textContent = `Tamamlanma oranı: %${pct}`;
+  }
+  async function api(action) {
+    try {
+      const res = await fetch('api.php' + (action ? `?action=${action}` : ''), { method: action ? 'POST' : 'GET', cache: 'no-store' });
+      if (!res.ok) return;
+      renderGlobal(await res.json());
+    } catch {} // sunucuya ulaşılamazsa oyun etkilenmez, sayaç "—" kalır
+  }
+  api(); setInterval(() => api(), 30000);
+
   /* ---------- Oyun ---------- */
   function shuffledCards() {
     const cards = pictures.flatMap((p, pairId) => [0, 1].map(copy => ({ pairId, emoji: p[0], color: p[1], copy })));
@@ -140,7 +160,7 @@
     first = null; locked = true; moves = 0; matches = 0; wrongs = 0; seconds = 0; updateStats();
     hint.textContent = 'Resimleri dikkatlice incele; 3 saniye sonra kartlar kapanacak.';
     renderBoard(true); overlay.classList.add('is-hidden');
-    sounds.start();
+    sounds.start(); api('start');
     previewTimeout = setTimeout(() => {
       locked = false; renderBoard();
       hint.textContent = 'Bir kart aç, sonra hafızanı kullanıp eşini bul.'; startClock();
@@ -155,7 +175,7 @@
       deck[first].matched = deck[second].matched = true; matches++; first = null; locked = false;
       updateStats(); renderBoard();
       if (matches === 18) {
-        stopClock(); saveScore(); setTimeout(() => sounds.win(), 250);
+        stopClock(); saveScore(); api('complete'); setTimeout(() => sounds.win(), 250);
         hint.textContent = 'Harika, bütün çiftleri buldun!';
         showOverlay('🎉', 'Hepsini buldun!', `${moves} hamlede (${wrongs} yanlış) ve ${timerLabel.textContent} sürede tamamladın. Bir tur daha oynamak ister misin?`, 'Tekrar oyna');
       } else {
