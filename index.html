@@ -5,46 +5,59 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f6f7fb">
   <title>Resim Bul — Hafıza Oyunu</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <main class="app-shell">
     <header class="topbar">
       <a class="brand" href="#" aria-label="Resim Bul ana sayfa"><span class="brand-mark">◈</span> resim<span>bul</span></a>
-      <div class="top-note"><span class="status-dot"></span> Hafıza antrenmanı</div>
+      <button class="sound-toggle" id="sound" type="button" aria-pressed="true" aria-label="Sesi kapat">
+        <span id="sound-icon" aria-hidden="true">🔊</span> <span id="sound-text">Ses açık</span>
+      </button>
     </header>
 
-    <section class="intro" aria-labelledby="game-title">
-      <div class="eyebrow"><span>✦</span> DİKKATİNİ TOPLA</div>
-      <h1 id="game-title">Resimleri eşleştir<span class="title-period">.</span></h1>
-      <p class="subtitle">Kartların yerini aklında tut, aynı olanları bul.</p>
-    </section>
+    <div class="layout">
+      <aside class="sidebar" aria-label="Skorlar">
+        <section class="side-card last-played">
+          <h2>Son oynanan</h2>
+          <p class="last-time" id="last-played">Henüz oynamadın</p>
+          <p class="last-sub" id="last-played-sub">İlk oyununu bitirince burada görünecek.</p>
+        </section>
+        <section class="side-card">
+          <div class="side-head"><h2>Son 6 skor</h2><button class="clear-button" id="clear-scores" type="button">Temizle</button></div>
+          <ol class="score-list" id="score-list"></ol>
+        </section>
+      </aside>
 
-    <section class="game-panel" aria-label="Hafıza oyunu">
-      <div class="game-toolbar">
-        <div class="stats" aria-live="polite">
-          <div class="stat"><span class="stat-label">EŞLEŞME</span><strong id="matches">0 <small>/ 18</small></strong></div>
-          <span class="stat-divider"></span>
-          <div class="stat"><span class="stat-label">HAMLE</span><strong id="moves">0</strong></div>
-          <span class="stat-divider"></span>
-          <div class="stat"><span class="stat-label">SÜRE</span><strong id="timer">00:00</strong></div>
+      <section class="game-panel" aria-label="Hafıza oyunu">
+        <div class="game-toolbar">
+          <div class="stats" aria-live="polite">
+            <div class="stat"><span class="stat-label">Eşleşme</span><strong id="matches">0 <small>/ 18</small></strong></div>
+            <span class="stat-divider"></span>
+            <div class="stat"><span class="stat-label">Hamle</span><strong id="moves">0</strong></div>
+            <span class="stat-divider"></span>
+            <div class="stat"><span class="stat-label">Süre</span><strong id="timer">00:00</strong></div>
+          </div>
+          <button class="restart-button" id="restart" type="button" aria-label="Oyunu yeniden başlat"><span aria-hidden="true">↻</span> Yeniden başla</button>
         </div>
-        <button class="restart-button" id="restart" type="button" aria-label="Oyunu yeniden başlat"><span aria-hidden="true">↻</span> Yeniden başla</button>
-      </div>
 
-      <div class="board-wrap">
-        <div class="board" id="board" role="grid" aria-label="36 kartlık oyun alanı"></div>
-        <div class="overlay" id="overlay">
-          <div class="overlay-card">
-            <div class="overlay-icon" id="overlay-icon">🧠</div>
-            <h2 id="overlay-title">Hazır mısın?</h2>
-            <p id="overlay-text">18 resim çiftinin yerini bul. Başlamadan önce kartları 3 saniye inceleyebilirsin.</p>
-            <button class="start-button" id="start" type="button">Oyuna başla <span aria-hidden="true">→</span></button>
+        <div class="board-wrap">
+          <div class="board" id="board" role="grid" aria-label="36 kartlık oyun alanı"></div>
+          <div class="overlay" id="overlay">
+            <div class="overlay-card">
+              <div class="overlay-icon" id="overlay-icon">🧠</div>
+              <h2 id="overlay-title">Hazır mısın?</h2>
+              <p id="overlay-text">18 resim çiftinin yerini bul. Başlamadan önce kartları 3 saniye inceleyebilirsin.</p>
+              <button class="start-button" id="start" type="button">Oyuna başla <span aria-hidden="true">→</span></button>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="game-footer"><span class="hint-icon">✦</span><span id="hint">Başlamak için butona dokun.</span><span class="keyboard-hint">İyi eğlenceler!</span></div>
-    </section>
+        <div class="game-footer"><span class="hint-icon">✦</span><span id="hint">Başlamak için butona dokun.</span></div>
+      </section>
+    </div>
     <footer class="page-footer">Biraz dikkat, biraz hafıza. <span>♡</span></footer>
   </main>
   <script src="game.js"></script>
